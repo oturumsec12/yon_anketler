@@ -59,7 +59,7 @@ function beginBusy(message) {
   $("appMain").setAttribute("aria-busy", "true");
   document.body.classList.add("is-busy");
   $("loadingStatus").textContent = message;
-  $("loadingHint").textContent = "Lütfen bekleyiniz; tekrar tıklamayınız.";
+  $("loadingHint").textContent = "Lütfen bekleyiniz.";
 
   loadingDelayTimer = window.setTimeout(() => {
     $("loadingOverlay").hidden = false;
@@ -67,7 +67,7 @@ function beginBusy(message) {
 
   slowRequestTimer = window.setTimeout(() => {
     $("loadingHint").textContent =
-      "İşlem beklenenden uzun sürüyor. Lütfen tekrar tıklamayınız.";
+      "İşlem beklenenden uzun sürüyor.";
   }, 10000);
 
   return true;
