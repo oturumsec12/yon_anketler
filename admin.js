@@ -1,6 +1,9 @@
 import { CONFIG, API_URL } from "./config.js";
 import { createXlsx } from "./xlsx-export.js";
 
+// Admin kodu yenileme, soru duzenleme ve CSV yukleme islemlerinin kodlari
+// korunur. Ilgili alanlar admin.html + styles.css ile yalnizca gizlenmistir.
+
 const $ = (id) => document.getElementById(id);
 // Admin oturum anahtari yalnizca bellekte tutulur, localStorage kullanilmaz.
 let adminSessionToken = "";

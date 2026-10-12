@@ -117,3 +117,9 @@ body.is-busy { cursor: progress; }
 @media (prefers-reduced-motion: reduce) {
   .loading-spinner { animation: none; }
 }
+
+
+/* Admin paneli: bu öğeler sadece görsel olarak gizlenir; HTML ve JS korunur. */
+.admin-feature-hidden {
+  display: none !important;
+}

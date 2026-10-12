@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Anket Yönetim Paneli</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=admin4">
 </head>
 <body>
   <main class="container">
@@ -31,7 +31,7 @@
         <h2>Genel Durum</h2>
         <div class="button-row">
           <button type="button" id="refreshButton" class="secondary">Yenile</button>
-          <button type="button" id="rotateAdminCodeButton" class="secondary">Admin Kodunu Yenile</button>
+          <button type="button" id="rotateAdminCodeButton" class="secondary admin-feature-hidden">Admin Kodunu Yenile</button>
           <button type="button" id="adminLogoutButton" class="secondary">Çıkış</button>
         </div>
       </div>
@@ -54,7 +54,7 @@
         <p id="deadlineMessage" class="message" role="alert" hidden></p>
       </section>
 
-      <section class="panel">
+      <section class="panel admin-feature-hidden">
         <h2>Ortak Beş Soru</h2>
         <p>Bu sorular bütün yöneticiler ve çalışanlar için aynıdır. İlk anket kaydedildikten sonra soru metinleri değiştirilemez.</p>
         <div class="stack" id="questionInputs">
@@ -68,7 +68,7 @@
         <p id="questionsMessage" class="message" role="alert" hidden></p>
       </section>
 
-      <section class="panel">
+      <section class="panel admin-feature-hidden">
         <h2>Yönetici ve Çalışanları CSV ile Yükle</h2>
         <p>CSV başlıkları: <code>manager_ref,manager_access_code,employee_ref,employee_name</code>. Referanslar pozitif tam sayıdır. Yönetici isimlerini toplamıyoruz. Giriş kodlarını siz belirliyorsunuz; çalışan isimleri Edge Function'da şifrelenir. Aynı yöneticinin her satırındaki kod aynı olmalıdır. Tekrar yükleme var olan çalışan isimlerini ve yönetici kodlarını günceller, eski atamaları silmez.</p>
         <input id="catalogCsv" type="file" accept=".csv,text/csv">
@@ -94,6 +94,6 @@
       </section>
     </div>
   </main>
-  <script type="module" src="./admin.js?v=3"></script>
+  <script type="module" src="./admin.js?v=4"></script>
 </body>
 </html>
