@@ -69,10 +69,12 @@ const errors = {
   INVALID_DEADLINE: "Geçerli bir bitiş tarihi ve saati seçiniz.",
   INVALID_IMPORT_ROW: "CSV'de geçersiz satır var.",
   INVALID_IMPORT_SIZE: "Bir seferde 1–1000 CSV satırı yükleyebilirsiniz.",
-  INVALID_REFERENCE: "Yönetici/çalışan referansı yalnızca A-Z, rakam, _ veya - içerebilir.",
-  INVALID_NAME: "Geçersiz çalışan veya yönetici adı var.",
-  CONFLICTING_MANAGER_NAME: "Aynı yönetici referansı CSV'de farklı isimlerle bulunuyor.",
-  CONFLICTING_EMPLOYEE_NAME: "Aynı çalışan referansı CSV'de farklı isimlerle bulunuyor.",
+  INVALID_REFERENCE: "Yönetici ve çalışan referansları 1 ile 2147483647 arasında tam sayı olmalıdır.",
+  INVALID_NAME: "Çalışan adı boş veya çok uzun.",
+  INVALID_MANAGER_CODE: "Yönetici giriş kodu 5 karakterli harf/rakam kombinasyonu olmalıdır.",
+  CONFLICTING_MANAGER_CODE: "Aynı yönetici referansı farklı giriş kodlarıyla yazılmış.",
+  DUPLICATE_MANAGER_CODE: "Aynı yönetici giriş kodu farklı yöneticilere verilmiş.",
+  CONFLICTING_EMPLOYEE_NAME: "Aynı çalışan referansı farklı isimlerle yazılmış.",
   DATASET_TOO_LARGE: "Bu sürümde raporlanabilecek veri sınırı aşıldı.",
 };
 
@@ -159,7 +161,7 @@ function renderOverview(data) {
     detail.className = "manager-summary";
     const summary = document.createElement("summary");
     const left = document.createElement("span");
-    left.textContent = `${manager.manager_name} (${manager.manager_ref})`;
+    left.textContent = `Yönetici ${manager.manager_ref}`;
     const rate = manager.total ? Math.round(manager.completed / manager.total * 100) : 0;
     const right = document.createElement("span");
     right.className = "muted";
@@ -256,12 +258,49 @@ function parseCsv(text) {
   if (row.some((v) => v.trim())) output.push(row);
   if (output.length < 2) throw new Error("CSV boş veya başlık satırı yok.");
   const header = output.shift().map((v) => v.trim().toLowerCase());
-  const required = ["manager_ref", "manager_name", "employee_ref", "employee_name"];
+  const required = ["manager_ref", "manager_access_code", "employee_ref", "employee_name"];
   const positions = required.map((c) => header.indexOf(c));
   if (positions.some((i) => i < 0)) throw new Error("CSV başlıkları: " + required.join(", "));
+
+  const codeByManager = new Map();
+  const managerByCode = new Map();
+  const nameByEmployee = new Map();
+  function numberRef(v, label, line) {
+    const raw = String(v ?? "").trim();
+    if (!/^[1-9][0-9]*$/.test(raw)) throw new Error(`${line}. satırda ${label} pozitif tam sayı olmalıdır.`);
+    const n = Number(raw);
+    if (!Number.isSafeInteger(n) || n > 2147483647) {
+      throw new Error(`${line}. satırda ${label} integer sınırını aşıyor.`);
+    }
+    return n;
+  }
   const records = output.map((row, index) => {
-    if (row.length !== header.length) throw new Error(`CSV ${index + 2}. satırdaki kolon sayısı yanlış.`);
-    return Object.fromEntries(required.map((key, i) => [key, (row[positions[i]] || "").trim()]));
+    const line = index + 2;
+    if (row.length !== header.length) throw new Error(`CSV ${line}. satırdaki kolon sayısı yanlış.`);
+    const v = Object.fromEntries(required.map((key, i) => [key, (row[positions[i]] || "").trim()]));
+    const manager_ref = numberRef(v.manager_ref, "manager_ref", line);
+    const employee_ref = numberRef(v.employee_ref, "employee_ref", line);
+    const manager_access_code = v.manager_access_code.toUpperCase();
+    const employee_name = v.employee_name.normalize("NFC");
+    if (!/^[A-Z0-9]{5}$/.test(manager_access_code)) {
+      throw new Error(`${line}. satırdaki manager_access_code 5 karakterli olmalıdır.`);
+    }
+    if (!employee_name || employee_name.length > 160) {
+      throw new Error(`${line}. satırdaki employee_name boş veya çok uzun.`);
+    }
+    if (codeByManager.has(manager_ref) && codeByManager.get(manager_ref) !== manager_access_code) {
+      throw new Error(`Yönetici ${manager_ref} farklı kodlarla yazılmış.`);
+    }
+    if (managerByCode.has(manager_access_code) && managerByCode.get(manager_access_code) !== manager_ref) {
+      throw new Error(`Kod ${manager_access_code} farklı yöneticilere verilmiş.`);
+    }
+    if (nameByEmployee.has(employee_ref) && nameByEmployee.get(employee_ref) !== employee_name) {
+      throw new Error(`Çalışan ${employee_ref} farklı isimlerle yazılmış.`);
+    }
+    codeByManager.set(manager_ref, manager_access_code);
+    managerByCode.set(manager_access_code, manager_ref);
+    nameByEmployee.set(employee_ref, employee_name);
+    return { manager_ref, manager_access_code, employee_ref, employee_name };
   });
   if (records.length > 1000) throw new Error("Bir seferde en fazla 1000 satır yükleyebilirsiniz.");
   return records;
@@ -290,7 +329,7 @@ $("importButton").addEventListener("click", async () => {
   notice("importMessage", "Aktarım sürüyor...", false);
   try {
     const data = await callAdmin("admin_import", { rows: csvRows });
-    notice("importMessage", `${data.managers_processed} yönetici, ${data.employees_processed} çalışan işlendi. ${data.new_assignments} yeni eşleştirme eklendi. Yönetici kod listesini indirmeyi unutmayın.`, false);
+    notice("importMessage", `${data.managers_processed} yönetici, ${data.employees_processed} çalışan işlendi. ${data.new_assignments} yeni eşleştirme eklendi. Kodlar CSV'de verdiğiniz değerlerdir.`, false);
     csvRows = [];
     $("catalogCsv").value = "";
     $("csvPreview").textContent = "";
@@ -322,7 +361,7 @@ $("downloadCodesButton").addEventListener("click", async () => {
   if (!confirm("Bu CSV, yöneticilerin erişim kodlarını açık içerecek. Güvenli saklayacak mısınız?")) return;
   try {
     const data = await callAdmin("admin_codes");
-    const headers = ["manager_ref", "manager_name", "access_code"];
+    const headers = ["manager_ref", "access_code"];
     const values = [headers, ...data.rows.map((r) => headers.map((k) => r[k]))];
     const csv = "\uFEFF" + values.map((row) => row.map(safeCsvCell).join(",")).join("\r\n");
     saveBlob(new Blob([csv], { type: "text/csv;charset=utf-8" }), "yonetici-giris-kodlari.csv");
@@ -335,9 +374,9 @@ $("excelButton").addEventListener("click", async () => {
   try {
     const data = await callAdmin("admin_export");
     const q = Array.from({ length: 5 }, (_, i) => data.questions[i] || `Soru ${i + 1}`);
-    const headers = ["Yönetici ID", "Yönetici", "Çalışan ID", "Çalışan", ...q,
+    const headers = ["Yönetici Ref", "Çalışan Ref", "Çalışan", ...q,
       "Tamamlanma Durumu", "Son Kayıt Zamanı (UTC)"];
-    const rows = data.rows.map((r) => [r.manager_ref, r.manager_name,
+    const rows = data.rows.map((r) => [r.manager_ref,
       r.employee_ref, r.employee_name, ...r.answers, r.status, r.completed_at]);
     const blob = createXlsx(headers, rows);
     saveBlob(blob, `anket-cevaplari-${new Date().toISOString().slice(0, 10)}.xlsx`);

@@ -78,7 +78,7 @@ $("loginForm").addEventListener("submit", async (event) => {
     const data = await request("manager_login", { access_code: code });
     sessionToken = data.session_token;
     $("managerCode").value = "";
-    $("managerGreeting").textContent = `Merhaba ${data.manager_name}`;
+    $("managerGreeting").textContent = "Hoş geldiniz";
     await loadEmployees();
   } catch (error) {
     if (error.code !== "EXPIRED") showMessage("loginMessage", error.message);

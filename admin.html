@@ -70,12 +70,12 @@
 
       <section class="panel">
         <h2>Yönetici ve Çalışanları CSV ile Yükle</h2>
-        <p>CSV başlıkları: <code>manager_ref,manager_name,employee_ref,employee_name</code>. Dosya yerel olarak okunur; isimler Supabase Edge Function'da şifrelenir. Yeniden import var olan isimleri günceller, ancak eski atamaları silmez.</p>
+        <p>CSV başlıkları: <code>manager_ref,manager_access_code,employee_ref,employee_name</code>. Referanslar pozitif tam sayıdır. Yönetici isimlerini toplamıyoruz. Giriş kodlarını siz belirliyorsunuz; çalışan isimleri Edge Function'da şifrelenir. Aynı yöneticinin her satırındaki kod aynı olmalıdır. Tekrar yükleme var olan çalışan isimlerini ve yönetici kodlarını günceller, eski atamaları silmez.</p>
         <input id="catalogCsv" type="file" accept=".csv,text/csv">
         <p id="csvPreview" class="muted"></p>
         <div class="button-row">
           <button id="importButton" type="button" disabled>Şifreleyerek Yükle</button>
-          <button id="downloadCodesButton" class="secondary" type="button">Yönetici Kod Listesini İndir (CSV)</button>
+          <button id="downloadCodesButton" class="secondary" type="button">Giriş Kodlarını İndir (CSV)</button>
         </div>
         <p class="muted small">Kod listesi yöneticilerin giriş kodlarını açık içerir. Yalnızca yetkili kişilerle güvenli paylaşın.</p>
         <p id="importMessage" class="message" role="alert" hidden></p>
@@ -94,6 +94,6 @@
       </section>
     </div>
   </main>
-  <script type="module" src="./admin.js"></script>
+  <script type="module" src="./admin.js?v=3"></script>
 </body>
 </html>
