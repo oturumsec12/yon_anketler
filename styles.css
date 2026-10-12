@@ -65,3 +65,55 @@ code { background: #f0f3f8; padding: 2px 5px; border-radius: 4px; }
   .inline-form { display: grid; align-items: normal; }
   .inline-form input { width: 100%; }
 }
+
+
+/* --- Yönetici ekranı: sunucu isteği bekleme katmanı --- */
+body.is-busy { cursor: progress; }
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(16, 31, 49, 0.52);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.loading-dialog {
+  width: min(100%, 360px);
+  border-radius: 16px;
+  border: 1px solid #dce4ed;
+  background: #fff;
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.22);
+  padding: 28px 24px;
+  text-align: center;
+}
+.loading-spinner {
+  display: block;
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 18px;
+  border: 4px solid #dce8f5;
+  border-top-color: #244f85;
+  border-radius: 50%;
+  animation: survey-loading-spin 0.85s linear infinite;
+}
+.loading-title {
+  margin: 0 0 8px;
+  color: #172536;
+  font-size: 17px;
+  font-weight: 700;
+}
+.loading-hint {
+  margin: 0;
+  color: #62758a;
+  font-size: 13px;
+  line-height: 1.55;
+}
+@keyframes survey-loading-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner { animation: none; }
+}

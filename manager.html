@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Çalışan Değerlendirme Anketi</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
-  <main class="container">
+  <main id="appMain" class="container">
     <header class="page-header">
       <h1>Çalışan Değerlendirme Anketi</h1>
       <p>Yöneticilere özel değerlendirme sistemi</p>
@@ -56,6 +56,16 @@
       <p id="surveyMessage" class="message" role="alert" hidden></p>
     </section>
   </main>
-  <script type="module" src="./manager.js?v=3"></script>
+  <!-- Yalnızca yönetici ekranında kullanılan ortak bekleme katmanı -->
+  <div id="loadingOverlay" class="loading-overlay" role="status" aria-live="polite"
+       aria-atomic="true" hidden>
+    <div class="loading-dialog">
+      <span class="loading-spinner" aria-hidden="true"></span>
+      <p id="loadingStatus" class="loading-title">İşlem yapılıyor...</p>
+      <p id="loadingHint" class="loading-hint">Lütfen bekleyiniz; tekrar tıklamayınız.</p>
+    </div>
+  </div>
+
+  <script type="module" src="./manager.js?v=4"></script>
 </body>
 </html>
