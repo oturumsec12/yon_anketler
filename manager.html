@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Çalışan Değerlendirme Anketi</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="container">
+    <header class="page-header">
+      <h1>Çalışan Değerlendirme Anketi</h1>
+      <p>Yöneticilere özel değerlendirme sistemi</p>
+    </header>
+
+    <section id="loginView" class="panel narrow">
+      <h2>Yönetici Girişi</h2>
+      <p>Size verilen 5 karakterli yönetici kodunu giriniz.</p>
+      <form id="loginForm" class="stack">
+        <label for="managerCode">Yönetici kodu</label>
+        <input id="managerCode" type="text" maxlength="5" pattern="[A-Za-z0-9]{5}"
+               autocapitalize="characters" autocomplete="off" spellcheck="false" required>
+        <button id="loginButton" type="submit">Giriş Yap</button>
+      </form>
+      <p id="loginMessage" class="message" role="alert" hidden></p>
+    </section>
+
+    <section id="expiredView" class="panel narrow centered" hidden>
+      <h2>Anket Süresi Dolmuştur</h2>
+      <p>Anket süresi dolmuştur. İlginiz için teşekkür ederiz.</p>
+    </section>
+
+    <section id="listView" class="panel" hidden>
+      <div class="toolbar">
+        <div>
+          <h2 id="managerGreeting"></h2>
+          <p id="deadlineInfo" class="muted"></p>
+        </div>
+        <button id="logoutButton" class="secondary" type="button">Çıkış</button>
+      </div>
+      <div class="progress-row"><strong id="progressInfo"></strong><span id="progressPercent"></span></div>
+      <div class="progress-track"><div id="progressBar" class="progress-fill"></div></div>
+      <p>Değerlendirmek istediğiniz çalışanın üzerine tıklayınız.</p>
+      <div id="employeeList" class="employee-list"></div>
+      <p id="listMessage" class="message" role="alert" hidden></p>
+    </section>
+
+    <section id="surveyView" class="panel" hidden>
+      <button id="backButton" type="button" class="secondary small">← Çalışan listesine dön</button>
+      <h2 id="employeeTitle"></h2>
+      <p class="muted">Her soruya Evet veya Hayır cevabı veriniz. Son tarihten önce cevaplarınızı değiştirebilirsiniz.</p>
+      <form id="surveyForm">
+        <div id="questionList" class="question-list"></div>
+        <button id="saveButton" type="submit" disabled>Cevapları Kaydet</button>
+      </form>
+      <p id="surveyMessage" class="message" role="alert" hidden></p>
+    </section>
+  </main>
+  <script type="module" src="./manager.js"></script>
+</body>
+</html>

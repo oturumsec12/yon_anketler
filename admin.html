@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anket Yönetim Paneli</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="container">
+    <header class="page-header">
+      <h1>Anket Yönetim Paneli</h1>
+      <p>Yönetici-çalışan değerlendirme takibi</p>
+    </header>
+
+    <section id="adminLoginView" class="panel narrow">
+      <h2>Admin Girişi</h2>
+      <p>Size verilen 5 karakterli admin kodunu giriniz.</p>
+      <form id="adminLoginForm" class="stack">
+        <label for="adminCode">Admin Kodu</label>
+        <input id="adminCode" type="password" maxlength="5" minlength="5"
+               pattern="[A-Za-z0-9]{5}" autocomplete="off"
+               autocapitalize="characters" spellcheck="false" required>
+        <button id="adminLoginButton" type="submit">Giriş Yap</button>
+      </form>
+      <p id="adminLoginMessage" class="message" role="alert" hidden></p>
+    </section>
+
+    <div id="adminDashboardView" hidden>
+      <div class="toolbar action-top">
+        <h2>Genel Durum</h2>
+        <div class="button-row">
+          <button type="button" id="refreshButton" class="secondary">Yenile</button>
+          <button type="button" id="rotateAdminCodeButton" class="secondary">Admin Kodunu Yenile</button>
+          <button type="button" id="adminLogoutButton" class="secondary">Çıkış</button>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <article class="stat"><span>Yönetici</span><strong id="totalManagers">—</strong></article>
+        <article class="stat"><span>Toplam anket</span><strong id="totalSurveys">—</strong></article>
+        <article class="stat"><span>Tamamlanan</span><strong id="completedSurveys">—</strong></article>
+        <article class="stat"><span>Tamamlanma</span><strong id="completionRate">—</strong></article>
+      </div>
+      <p id="dashboardMessage" class="message" role="alert" hidden></p>
+
+      <section class="panel">
+        <h2>Son Doldurma Tarihi</h2>
+        <p>Türkiye saatiyle tarih ve saat seçiniz. Seçilen dakikanın son saniyesine kadar kayıt yapılabilir.</p>
+        <div class="inline-form">
+          <label for="deadlineInput">Bitiş tarihi ve saati</label>
+          <input id="deadlineInput" type="datetime-local" step="60">
+          <button type="button" id="saveDeadlineButton">Tarihi Kaydet</button>
+        </div>
+        <p id="deadlineMessage" class="message" role="alert" hidden></p>
+      </section>
+
+      <section class="panel">
+        <h2>Ortak Beş Soru</h2>
+        <p>Bu sorular bütün yöneticiler ve çalışanlar için aynıdır. İlk anket kaydedildikten sonra soru metinleri değiştirilemez.</p>
+        <div class="stack" id="questionInputs">
+          <label>Soru 1<textarea id="question1" rows="2"></textarea></label>
+          <label>Soru 2<textarea id="question2" rows="2"></textarea></label>
+          <label>Soru 3<textarea id="question3" rows="2"></textarea></label>
+          <label>Soru 4<textarea id="question4" rows="2"></textarea></label>
+          <label>Soru 5<textarea id="question5" rows="2"></textarea></label>
+        </div>
+        <button type="button" id="saveQuestionsButton">Beş Soruyu Kaydet</button>
+        <p id="questionsMessage" class="message" role="alert" hidden></p>
+      </section>
+
+      <section class="panel">
+        <h2>Yönetici ve Çalışanları CSV ile Yükle</h2>
+        <p>CSV başlıkları: <code>manager_ref,manager_name,employee_ref,employee_name</code>. Dosya yerel olarak okunur; isimler Supabase Edge Function'da şifrelenir. Yeniden import var olan isimleri günceller, ancak eski atamaları silmez.</p>
+        <input id="catalogCsv" type="file" accept=".csv,text/csv">
+        <p id="csvPreview" class="muted"></p>
+        <div class="button-row">
+          <button id="importButton" type="button" disabled>Şifreleyerek Yükle</button>
+          <button id="downloadCodesButton" class="secondary" type="button">Yönetici Kod Listesini İndir (CSV)</button>
+        </div>
+        <p class="muted small">Kod listesi yöneticilerin giriş kodlarını açık içerir. Yalnızca yetkili kişilerle güvenli paylaşın.</p>
+        <p id="importMessage" class="message" role="alert" hidden></p>
+      </section>
+
+      <section class="panel">
+        <div class="toolbar">
+          <div>
+            <h2>Yönetici Bazlı Tamamlanma</h2>
+            <p class="muted">Bir yöneticiye tıklayarak bağlı çalışanların durumunu açabilirsiniz.</p>
+          </div>
+          <button id="excelButton" type="button">Cevapları Excel Olarak İndir</button>
+        </div>
+        <div id="managerStatusList" class="manager-status-list"></div>
+        <p id="excelMessage" class="message" role="alert" hidden></p>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="./admin.js"></script>
+</body>
+</html>
